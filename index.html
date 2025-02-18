@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Americano Padel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Americano Padel</h1>
+        <div id="input-section">
+            <label for="players">Wpisz nazwy graczy (oddziel przecinkami):</label>
+            <input type="text" id="players" placeholder="np. Jan, Anna, Piotr, Kasia, Marek">
+            <button onclick="generateMatches()">Generuj mecze</button>
+        </div>
+        <div id="matches-section" style="display:none;">
+            <h2>Lista meczów:</h2>
+            <ul id="matches-list"></ul>
+            <button onclick="showResults()">Pokaż wyniki</button>
+        </div>
+        <div id="results-section" style="display:none;">
+            <h2>Podsumowanie:</h2>
+            <ul id="results-list"></ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
