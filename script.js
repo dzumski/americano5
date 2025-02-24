@@ -3,94 +3,118 @@ let matches = [];
 let results = {};
 
 function generateMatches() {
+    // Pobieranie nazw graczy z pola tekstowego
     const playersInput = document.getElementById('players').value;
-    players = playersInput.split(',').map(player => player.trim());
-    if (players.length !== 5) {
-        alert("Wprowadź dokładnie 5 graczy.");
+    const playersArray = playersInput.split(',').map(name => name.trim()).filter(name => name !== '');
+
+    // Walidacja: dokładnie 5 unikalnych nazw
+    if (playersArray.length !== 5 || new Set(playersArray).size !== 5) {
+        alert('Proszę wpisać dokładnie 5 unikalnych nazw graczy oddzielonych przecinkami.');
         return;
     }
 
-    // Przypisanie graczy do liter A, B, C, D, E
-    const [A, B, C, D, E] = players;
+    players = playersArray;
 
-    // Na sztywno przypisane mecze w podanej kolejności
+    // Lista meczów w Twoim określonym porządku
     matches = [
-        [A, B, C, D],   // Mecz 1: A, B vs C, D
-        [A, C, B, D],   // Mecz 2: A, C vs B, D
-        [A, D, B, C],   // Mecz 3: A, D vs B, C
-        [A, B, C, E],   // Mecz 4: A, B vs C, E
-        [B, C, D, E],   // Mecz 5: B, C vs D, E
-        [A, B, D, E],   // Mecz 6: A, B vs D, E
-        [A, C, B, E],   // Mecz 7: A, C vs B, E
-        [A, D, B, E],   // Mecz 8: A, D vs B, E
-        [A, E, B, C],   // Mecz 9: A, E vs B, C
-        [B, D, C, E],   // Mecz 10: B, D vs C, E
-        [A, C, D, E],   // Mecz 11: A, C vs D, E
-        [A, D, C, E],   // Mecz 12: A, D vs C, E
-        [A, E, B, D],   // Mecz 13: A, E vs B, D
-        [A, E, C, D],   // Mecz 14: A, E vs C, D
-        [B, E, C, D]    // Mecz 15: B, E vs C, D
+        [[0, 1], [2, 3]],  // Mecz 1: Kuba & Paweł vs. Wojtek & Roman
+        [[2, 3], [1, 4]],  // Mecz 2: Wojtek & Roman vs. Paweł & Suchy
+        [[0, 1], [4, 3]],  // Mecz 3: Kuba & Paweł vs. Suchy & Roman
+        [[2, 4], [0, 1]],  // Mecz 4: Wojtek & Suchy vs. Kuba & Paweł
+        [[0, 2], [4, 3]],  // Mecz 5: Kuba & Wojtek vs. Suchy & Roman
+        [[0, 3], [2, 1]],  // Mecz 6: Kuba & Roman vs. Wojtek & Paweł
+        [[2, 1], [4, 3]],  // Mecz 7: Wojtek & Paweł vs. Suchy & Roman
+        [[0, 4], [1, 3]],  // Mecz 8: Kuba & Suchy vs. Paweł & Roman
+        [[2, 1], [0, 4]],  // Mecz 9: Wojtek & Paweł vs. Kuba & Suchy
+        [[0, 3], [2, 4]],  // Mecz 10: Kuba & Roman vs. Wojtek & Suchy
+        [[0, 2], [1, 3]],  // Mecz 11: Kuba & Wojtek vs. Paweł & Roman
+        [[1, 3], [2, 4]],  // Mecz 12: Paweł & Roman vs. Wojtek & Suchy
+        [[0, 3], [1, 4]],  // Mecz 13: Kuba & Roman vs. Paweł & Suchy
+        [[1, 4], [0, 2]],  // Mecz 14: Paweł & Suchy vs. Kuba & Wojtek
+        [[0, 4], [2, 3]]   // Mecz 15: Kuba & Suchy vs. Wojtek & Roman
     ];
 
-    displayMatches();
+    // Wyświetlanie listy meczów w formie tabeli
+    const matchList = document.getElementById('match-list');
+    matchList.innerHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Nr</th>
+                    <th>Para 1</th>
+                    <th>vs</th>
+                    <th>Para 2</th>
+                    <th>Wynik</th>
+                    <th>Siedzi</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${matches.map((match, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${players[match[0][0]]} & ${players[match[0][1]]}</td>
+                        <td>vs</td>
+                        <td>${players[match[1][0]]} & ${players[match[1][1]]}</td>
+                        <td>
+                            <input type="number" min="0" max="24" id="match-${index}-team1"> : 
+                            <input type="number" min="0" max="24" id="match-${index}-team2">
+                        </td>
+                        <td>${players.find((player, playerIndex) => ![...match[0], ...match[1]].includes(playerIndex))}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+
+    document.getElementById('matches').style.display = 'block';
 }
 
-function displayMatches() {
-    const matchesList = document.getElementById('matches-list');
-    matchesList.innerHTML = '';
-    matches.forEach((match, index) => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            Mecz ${index + 1}: ${match[0]}, ${match[1]} vs ${match[2]}, ${match[3]}
-            <input type="text" class="score-input" id="score-${index}-0" placeholder="wynik">
-            <input type="text" class="score-input" id="score-${index}-1" placeholder="wynik">
-        `;
-        matchesList.appendChild(li);
-    });
-
-    document.getElementById('matches-section').style.display = 'block';
-}
-
-function showResults() {
+function generateResults() {
     results = {};
-    players.forEach(player => {
-        results[player] = 0;
+    players.forEach((player, index) => {
+        results[index] = 0; // Inicjalizacja wyników dla każdego gracza
     });
 
+    // Zbieranie wyników z pól input
     matches.forEach((match, index) => {
-        const score0 = document.getElementById(`score-${index}-0`).value;
-        const score1 = document.getElementById(`score-${index}-1`).value;
+        const score1 = parseInt(document.getElementById(`match-${index}-team1`).value, 10);
+        const score2 = parseInt(document.getElementById(`match-${index}-team2`).value, 10);
 
-        if (score0 && score1) {
-            const points0 = parseInt(score0, 10);
-            const points1 = parseInt(score1, 10);
-
-            if (points0 + points1 === 24) {
-                // Przydziel punkty do graczy
-                results[match[0]] += points0;
-                results[match[1]] += points0;
-                results[match[2]] += points1;
-                results[match[3]] += points1;
-            } else {
-                alert(`Suma punktów w meczu ${match.join(', ')} nie wynosi 24.`);
-            }
+        if (!isNaN(score1) && !isNaN(score2) && score1 + score2 === 24) {
+            // Przydzielanie punktów graczom
+            results[match[0][0]] += score1; // Gracz 1 z drużyny 1
+            results[match[0][1]] += score1; // Gracz 2 z drużyny 1
+            results[match[1][0]] += score2; // Gracz 1 z drużyny 2
+            results[match[1][1]] += score2; // Gracz 2 z drużyny 2
+        } else {
+            alert(`Nieprawidłowy wynik w meczu ${index + 1}. Suma punktów musi wynosić 24.`);
+            return;
         }
     });
 
-    displayResults();
-}
-
-function displayResults() {
-    const resultsList = document.getElementById('results-list');
-    resultsList.innerHTML = '';
-
+    // Sortowanie graczy od największej do najmniejszej liczby punktów
     const sortedResults = Object.entries(results).sort((a, b) => b[1] - a[1]);
 
-    sortedResults.forEach(([player, points]) => {
-        const li = document.createElement('li');
-        li.textContent = `${player}: ${points} punktów`;
-        resultsList.appendChild(li);
-    });
+    // Wyświetlanie wyników
+    const resultsList = document.getElementById('results-list');
+    resultsList.innerHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Gracz</th>
+                    <th>Punkty</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${sortedResults.map(([playerIndex, points]) => `
+                    <tr>
+                        <td>${players[playerIndex]}</td>
+                        <td>${points}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
 
-    document.getElementById('results-section').style.display = 'block';
+    document.getElementById('results').style.display = 'block';
 }
