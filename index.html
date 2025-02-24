@@ -7,24 +7,21 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Americano Padel</h1>
-        <h3>5 graczy, wszystkie mecze, 24 punkty</h3>
-        <div id="input-section">
-            <label for="players">Wpisz nazwy graczy (oddziel przecinkami):</label>
-            <input type="text" id="players" placeholder="np. Jan, Anna, Piotr, Kasia, Marek">
-            <button onclick="generateMatches()">Generuj mecze</button>
-        </div>
-        <div id="matches-section" style="display:none;">
-            <h2>Lista meczów:</h2>
-            <ul id="matches-list"></ul>
-            <button onclick="showResults()">Pokaż wyniki</button>
-        </div>
-        <div id="results-section" style="display:none;">
-            <h2>Podsumowanie:</h2>
-            <ul id="results-list"></ul>
-        </div>
+    <h1>Americano Padel</h1>
+    <div id="players-input">
+        <h2>Wpisz nazwy graczy oddzielone przecinkami</h2>
+        <input type="text" id="players" placeholder="np. Jan, Adam, Piotr, Kamil, Tomek">
+        <button onclick="generateMatches()">Generuj mecze</button>
     </div>
+<div id="matches" style="display: none;">
+    <h2>Lista meczów</h2>
+    <div id="match-list"></div>
+    <button onclick="generateResults()">Generuj wyniki</button>
+</div>
+<div id="results" style="display: none;">
+    <h2>Wyniki</h2>
+    <div id="results-list"></div>
+</div>
     <script src="script.js"></script>
 </body>
 </html>
